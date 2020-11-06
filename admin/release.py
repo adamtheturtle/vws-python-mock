@@ -7,6 +7,7 @@ import os
 import subprocess
 from pathlib import Path
 
+import docker
 from github import Github
 from github.ContentFile import ContentFile
 from github.Repository import Repository
@@ -72,6 +73,26 @@ def build_and_upload_to_pypi() -> None:
     ):
         subprocess.run(args=args, check=True)
 
+def build_and_publish_docker_images() -> None:
+    """
+    """
+    pass
+    repository_root = Path(__file__).parent.parent.parent
+    client = docker.from_env()
+
+    dockerfile_dir = repository_root / 'src/mock_vws/_flask_server/dockerfiles'
+    base_dockerfile = dockerfile_dir / 'base' / 'Dockerfile'
+    target_manager_dockerfile = (
+        dockerfile_dir / 'target_manager' / 'Dockerfile'
+    )
+    vws_dockerfile = dockerfile_dir / 'vws' / 'Dockerfile'
+    vwq_dockerfile = dockerfile_dir / 'vwq' / 'Dockerfile'
+
+    base_tag = 'vws-mock:base'
+    target_manager_tag = 'vws-mock-target-manager:latest'
+    vws_tag = 'vws-mock-vws:latest'
+    vwq_tag = 'vws-mock-vwq:latest'
+
 
 def main() -> None:
     """
@@ -95,6 +116,7 @@ def main() -> None:
         object=github_repository.get_commits()[0].sha,
     )
     build_and_upload_to_pypi()
+    build_and_publish_docker_images()
 
 
 if __name__ == '__main__':
